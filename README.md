@@ -23,25 +23,99 @@ Optimus is a desktop image optimization application. It supports conversion and 
 
 ### Downloads
 
-Download the latest version from the [releases page](https://github.com/Splode/optimus/releases).
+Download the latest version from the [releases page](https://github.com/panyingyun/optimus/releases).
 
 Optimus is available for Windows, macOS, and Linux.
 
-### Scoop
-
-```bash
-scoop install https://raw.githubusercontent.com/Splode/optimus/main/optimus.json
-```
-
 ## Development
 
-Optimus is built using [Wails](https://wails.app/) and uses JavaScript on the frontend and Go on the backend.
+Optimus is built using [Wails](https://wails.app/) v2.11.0 and uses JavaScript on the frontend and Go on the backend.
 
-Take the following steps to develop locally:
+### Prerequisites
 
-1. Clone the repo
-2. Install Wails
-3. Install go and npm dependencies
+- Go 1.22.0 or later
+- Node.js and npm
+- Wails v2.11.0
+
+### Setup
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/panyingyun/optimus.git
+   cd optimus
+   ```
+
+2. Install Wails:
+   ```bash
+   go install github.com/wailsapp/wails/v2/cmd/wails@latest
+   ```
+
+3. Install system dependencies (Linux):
+   
+   For Ubuntu 22.04:
+   ```bash
+   sudo apt install libwebkit2gtk-4.0-dev libgtk-3-dev -y
+   ```
+   
+   For Ubuntu 24.04:
+   ```bash
+   sudo apt install libwebkit2gtk-4.1-dev libgtk-3-dev -y
+   ```
+
+4. Install Go dependencies:
+   ```bash
+   go mod tidy
+   ```
+
+5. Install frontend dependencies:
+   ```bash
+   cd frontend
+   npm install
+   cd ..
+   ```
+
+### Development
+
+Run the development server:
+
+For Ubuntu 22.04:
+```bash
+make dev_ubuntu2204
+# or
+wails dev -tags webkit2_40
+```
+
+For Ubuntu 24.04:
+```bash
+make dev_ubuntu2404
+# or
+wails dev -tags webkit2_41
+```
+
+### Building
+
+Build the application:
+
+For Ubuntu 22.04:
+```bash
+make build_ubuntu2204
+# or
+wails build -tags webkit2_40
+```
+
+For Ubuntu 24.04:
+```bash
+make build_ubuntu2404
+# or
+wails build -tags webkit2_41
+```
+
+For Windows:
+```bash
+make build-windows
+# or
+wails build
+```
 
 ## License
 
