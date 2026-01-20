@@ -58,8 +58,8 @@ export default {
     },
 
     openLink(u) {
-      if (window.go && window.go.Browser) {
-        window.go.Browser.OpenURL(u)
+      if (window.runtime && window.runtime.BrowserOpenURL) {
+        window.runtime.BrowserOpenURL(u)
       }
     }
   }

@@ -605,8 +605,8 @@ export default {
   },
 
   mounted() {
-    if (window.go && window.go.Events) {
-      window.go.Events.On('conversion:complete', e => {
+    if (window.runtime && window.runtime.EventsOn) {
+      window.runtime.EventsOn('conversion:complete', e => {
         const f = this.getFileById(e.id)
         if (!f) return
         f.convertedPath = e.path
@@ -614,7 +614,7 @@ export default {
         f.convertedSize = e.size
       })
 
-      window.go.Events.On('conversion:stat', e => {
+      window.runtime.EventsOn('conversion:stat', e => {
         const c = e.count
         const r = e.resizes
         const s = e.savings

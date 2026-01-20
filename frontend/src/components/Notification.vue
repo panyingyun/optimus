@@ -93,8 +93,8 @@ export default {
 
   mounted() {
     EventBus.$on('notify', this.notify)
-    if (window.go && window.go.Events) {
-      window.go.Events.On('notify', this.notify)
+    if (window.runtime && window.runtime.EventsOn) {
+      window.runtime.EventsOn('notify', this.notify)
     }
   }
 }
