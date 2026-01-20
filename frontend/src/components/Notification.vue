@@ -60,7 +60,6 @@
 
 <script>
 import { EventBus } from '@/lib/event-bus'
-import Wails from '@wailsapp/runtime'
 
 export default {
   name: 'Notification',
@@ -94,7 +93,9 @@ export default {
 
   mounted() {
     EventBus.$on('notify', this.notify)
-    Wails.Events.On('notify', this.notify)
+    if (window.go && window.go.Events) {
+      window.go.Events.On('notify', this.notify)
+    }
   }
 }
 </script>

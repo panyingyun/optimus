@@ -62,7 +62,7 @@ const store = new Vuex.Store({
     },
 
     getConfig(context) {
-      window.backend.Config.GetAppConfig()
+      window.go.Config.GetAppConfig()
         .then(cfg => {
           context.commit('setConfig', cfg)
         })
@@ -72,7 +72,7 @@ const store = new Vuex.Store({
     },
 
     setConfig(context, c) {
-      window.backend.Config.SetConfig(JSON.stringify(c))
+      window.go.Config.SetConfig(JSON.stringify(c))
         .then(() => {
           context.dispatch('getConfig')
         })
@@ -94,7 +94,7 @@ const store = new Vuex.Store({
     },
 
     getStats(context) {
-      window.backend.Stat.GetStats()
+      window.go.Stat.GetStats()
         .then(s => {
           context.commit('setStats', s)
         })

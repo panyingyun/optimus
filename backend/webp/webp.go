@@ -2,9 +2,10 @@ package webp
 
 import (
 	"bytes"
-	"github.com/chai2010/webp"
 	"image"
 	"io"
+
+	"github.com/chai2010/webp"
 )
 
 // Options represent WebP encoding options.

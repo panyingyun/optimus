@@ -268,7 +268,6 @@
 <script>
 import { fExt, fName, fSize } from '@/lib/file'
 import { EventBus } from '@/lib/event-bus'
-import Wails from '@wailsapp/runtime'
 import { prettyTime } from '@/lib/time'
 
 export default {
@@ -356,7 +355,7 @@ export default {
     clear() {
       this.files = []
       this.$refs['fileInput'].value = null
-      window.backend.FileManager.Clear()
+      window.go.FileManager.Clear()
         .then(res => {
           console.log(res)
         })
@@ -370,7 +369,7 @@ export default {
      */
     convert() {
       this.isConverting = true
-      window.backend.FileManager.Convert()
+      window.go.FileManager.Convert()
         .then(res => {
           console.log(res)
         })
@@ -505,14 +504,15 @@ export default {
      * openFile opens the file at the given file path.
      */
     openFile(file) {
-      // TODO: can this be called directly from Wails?
-      window.backend.FileManager.OpenFile(file.convertedPath)
-        .then(res => {
-          console.log(res)
-        })
-        .catch(err => {
-          console.error(err)
-        })
+      if (window.go && window.go.FileManager) {
+        window.go.FileManager.OpenFile(file.convertedPath)
+          .then(res => {
+            console.log(res)
+          })
+          .catch(err => {
+            console.error(err)
+          })
+      }
     },
 
     /**
@@ -567,7 +567,7 @@ export default {
       const reader = new FileReader()
       reader.onload = () => {
         const name = file.name
-        window.backend.FileManager.HandleFile(
+        window.go.FileManager.HandleFile(
           JSON.stringify({
             data: reader.result.split(',')[1],
             ext: fExt(name),
@@ -605,40 +605,42 @@ export default {
   },
 
   mounted() {
-    Wails.Events.On('conversion:complete', e => {
-      const f = this.getFileById(e.id)
-      if (!f) return
-      f.convertedPath = e.path
-      f.isConverted = true
-      f.convertedSize = e.size
-    })
+    if (window.go && window.go.Events) {
+      window.go.Events.On('conversion:complete', e => {
+        const f = this.getFileById(e.id)
+        if (!f) return
+        f.convertedPath = e.path
+        f.isConverted = true
+        f.convertedSize = e.size
+      })
 
-    Wails.Events.On('conversion:stat', e => {
-      const c = e.count
-      const r = e.resizes
-      const s = e.savings
-      const t = e.time
-      this.$store.dispatch('setSessionProp', { key: 'count', value: c })
-      this.$store.dispatch('setSessionProp', { key: 'time', value: t })
-      this.$store.dispatch('getStats')
-      if (s > 0) {
-        this.$store.dispatch('setSessionProp', { key: 'savings', value: s })
-      }
-      if (r > 0) {
-        EventBus.$emit('notify', {
-          msg: `Optimized ${c} ${c > 1 ? 'images' : 'image'} and made ${r} ${
-            r > 1 ? 'resizes' : 'resize'
-          } in ${prettyTime(t)[0]} ${prettyTime(t)[1].toLowerCase()}.`
-        })
-      } else {
-        EventBus.$emit('notify', {
-          msg: `Optimized ${c} ${c > 1 ? 'images' : 'image'} in ${
-            prettyTime(t)[0]
-          } ${prettyTime(t)[1].toLowerCase()}.`
-        })
-      }
-      this.isConverting = false
-    })
+      window.go.Events.On('conversion:stat', e => {
+        const c = e.count
+        const r = e.resizes
+        const s = e.savings
+        const t = e.time
+        this.$store.dispatch('setSessionProp', { key: 'count', value: c })
+        this.$store.dispatch('setSessionProp', { key: 'time', value: t })
+        this.$store.dispatch('getStats')
+        if (s > 0) {
+          this.$store.dispatch('setSessionProp', { key: 'savings', value: s })
+        }
+        if (r > 0) {
+          EventBus.$emit('notify', {
+            msg: `Optimized ${c} ${c > 1 ? 'images' : 'image'} and made ${r} ${
+              r > 1 ? 'resizes' : 'resize'
+            } in ${prettyTime(t)[0]} ${prettyTime(t)[1].toLowerCase()}.`
+          })
+        } else {
+          EventBus.$emit('notify', {
+            msg: `Optimized ${c} ${c > 1 ? 'images' : 'image'} in ${
+              prettyTime(t)[0]
+            } ${prettyTime(t)[1].toLowerCase()}.`
+          })
+        }
+        this.isConverting = false
+      })
+    }
 
     const dz = this.$refs['dropZone']
 

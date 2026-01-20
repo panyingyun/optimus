@@ -2,10 +2,11 @@ package png
 
 import (
 	"bytes"
-	"github.com/foobaz/lossypng/lossypng"
 	"image"
 	"image/png"
 	"io"
+
+	"github.com/foobaz/lossypng/lossypng"
 )
 
 const qMax = 20

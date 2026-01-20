@@ -14,7 +14,7 @@
     "bridge": "src",
     "serve": "npm run serve"
   },
-  "WailsVersion": "1.7.1",
+  "WailsVersion": "2.11.0",
   "CrossCompile": false,
   "Platform": "",
   "Architecture": "",

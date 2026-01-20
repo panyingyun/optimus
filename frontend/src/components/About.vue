@@ -58,7 +58,9 @@ export default {
     },
 
     openLink(u) {
-      window.wails.Browser.OpenURL(u)
+      if (window.go && window.go.Browser) {
+        window.go.Browser.OpenURL(u)
+      }
     }
   }
 }

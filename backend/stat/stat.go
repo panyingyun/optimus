@@ -1,8 +1,9 @@
 package stat
 
 import (
+	"context"
 	"encoding/json"
-	"github.com/wailsapp/wails"
+
 	"optimus/backend/localstore"
 )
 
@@ -14,9 +15,7 @@ type Stat struct {
 	ImageCount int   `json:"imageCount"`
 	TimeCount  int64 `json:"timeCount"`
 
-	Runtime *wails.Runtime
-	Logger  *wails.CustomLogger
-
+	ctx        context.Context
 	localStore *localstore.LocalStore
 }
 
@@ -31,12 +30,9 @@ func NewStat() *Stat {
 	return s
 }
 
-// WailsInit performs setup when Wails is ready.
-func (s *Stat) WailsInit(runtime *wails.Runtime) error {
-	s.Runtime = runtime
-	s.Logger = s.Runtime.Log.New("Stat")
-	s.Logger.Info("Stat initialized...")
-	return nil
+// OnStartup is called when the app starts.
+func (s *Stat) OnStartup(ctx context.Context) {
+	s.ctx = ctx
 }
 
 // GetStats returns the application stats.
@@ -54,9 +50,7 @@ func (s *Stat) SetByteCount(b int64) {
 		return
 	}
 	s.ByteCount += b
-	if err := s.store(); err != nil {
-		s.Logger.Errorf("failed to store stats: %v", err)
-	}
+	_ = s.store()
 }
 
 // SetImageCount adds and persists the given image count to the app stats.
@@ -65,9 +59,7 @@ func (s *Stat) SetImageCount(i int) {
 		return
 	}
 	s.ImageCount += i
-	if err := s.store(); err != nil {
-		s.Logger.Errorf("failed to store stats: %v", err)
-	}
+	_ = s.store()
 }
 
 // SetTimeCount adds and persists the given time count to the app stats.
@@ -76,9 +68,7 @@ func (s *Stat) SetTimeCount(t int64) {
 		return
 	}
 	s.TimeCount += t
-	if err := s.store(); err != nil {
-		s.Logger.Errorf("failed to store stats: %v", err)
-	}
+	_ = s.store()
 }
 
 // store stores the app stats to the file system.

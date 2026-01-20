@@ -2,22 +2,24 @@ package image
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"image"
 	"io/ioutil"
-	"optimus/backend/config"
-	"optimus/backend/jpeg"
-	"optimus/backend/png"
-	"optimus/backend/webp"
 	"os"
 	"path"
 	"path/filepath"
 
+	"optimus/backend/config"
+	"optimus/backend/jpeg"
+	"optimus/backend/png"
+	"optimus/backend/webp"
+
 	"github.com/disintegration/imaging"
 	"github.com/muesli/smartcrop"
 	"github.com/muesli/smartcrop/nfnt"
-	"github.com/wailsapp/wails"
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 const (
@@ -45,7 +47,7 @@ type File struct {
 	ConvertedFile string
 	IsConverted   bool
 	Image         image.Image
-	Runtime       *wails.Runtime
+	ctx           context.Context
 }
 
 // Decode decodes the file's data based on its mime type.
@@ -96,10 +98,12 @@ func (f *File) Write(c *config.Config) error {
 	if c.App.Sizes != nil {
 		for _, r := range c.App.Sizes {
 			if r.Height <= 0 || r.Width <= 0 {
-				f.Runtime.Events.Emit("notify", map[string]interface{}{
-					"msg":  fmt.Sprintf("Invalid image size: %s", r.String()),
-					"type": "warn",
-				})
+				if f.ctx != nil {
+					runtime.EventsEmit(f.ctx, "notify", map[string]interface{}{
+						"msg":  fmt.Sprintf("Invalid image size: %s", r.String()),
+						"type": "warn",
+					})
+				}
 				continue
 			}
 			var i image.Image
@@ -126,7 +130,7 @@ func (f *File) Write(c *config.Config) error {
 			if err != nil {
 				return err
 			}
-			if err = ioutil.WriteFile(dest, buf.Bytes(), 0666); err != nil {
+			if err = ioutil.WriteFile(dest, buf.Bytes(), 0o666); err != nil {
 				return err
 			}
 		}
@@ -136,7 +140,7 @@ func (f *File) Write(c *config.Config) error {
 	if err != nil {
 		return err
 	}
-	if err = ioutil.WriteFile(dest, buf.Bytes(), 0666); err != nil {
+	if err = ioutil.WriteFile(dest, buf.Bytes(), 0o666); err != nil {
 		return err
 	}
 	f.ConvertedFile = filepath.Clean(dest)

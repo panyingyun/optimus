@@ -12,7 +12,6 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "@wailsapp/runtime": "^1.1.1",
     "autoprefixer": "^9.8.6",
     "core-js": "^3.6.4",
     "regenerator-runtime": "^0.13.7",

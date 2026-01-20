@@ -1,10 +1,11 @@
 package localstore
 
 import (
-	"github.com/vrischmann/userdir"
 	"io/ioutil"
 	"os"
 	"path"
+
+	"github.com/vrischmann/userdir"
 )
 
 // LocalStore provides reading and writing application data to the user's
@@ -36,7 +37,7 @@ func (l *LocalStore) Store(data []byte, filename string) error {
 	if err := ensureDirExists(l.ConfDir); err != nil {
 		return err
 	}
-	if err := ioutil.WriteFile(p, data, 0777); err != nil {
+	if err := ioutil.WriteFile(p, data, 0o777); err != nil {
 		return err
 	}
 	return nil
@@ -47,7 +48,7 @@ func (l *LocalStore) Store(data []byte, filename string) error {
 func ensureDirExists(path string) error {
 	_, err := os.Stat(path)
 	if os.IsNotExist(err) {
-		if err = os.Mkdir(path, 0777); err != nil {
+		if err = os.Mkdir(path, 0o777); err != nil {
 			return err
 		}
 	}
