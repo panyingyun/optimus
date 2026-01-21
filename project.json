@@ -2,10 +2,10 @@
   "name": "Optimus",
   "description": "Image conversion and compression. Supports WebP, JPEG, and PNG.",
   "author": {
-    "name": "Christopher Murphy",
-    "email": "flyweight@protonmail.com"
+    "name": "Optimus",
+    "email": "panyingyun@gmail.com"
   },
-  "version": "0.5.0-beta",
+  "version": "0.6.0",
   "binaryname": "optimus",
   "frontend": {
     "dir": "frontend",

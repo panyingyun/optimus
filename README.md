@@ -1,8 +1,8 @@
-![Optimus logo](./.github/optimus-logo--960x540.png)
-
 # Optimus
 
 > Image compression, optimization and conversion desktop app.
+
+a project fork from https://github.com/Splode/optimus
 
 ## Overview
 
@@ -119,4 +119,4 @@ wails build
 
 ## License
 
-MIT &copy; 2020 Christopher Murphy
+MIT
