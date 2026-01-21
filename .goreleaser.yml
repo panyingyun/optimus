@@ -1,0 +1,263 @@
+# GoReleaser 配置文件
+# 用于自动化构建和发布多个平台版本 (Wails v2)
+# 
+# 注意：Wails 应用需要在原生平台上构建，建议在 CI 中使用矩阵构建
+# 每个平台需要在对应的原生系统上构建（Linux 在 Linux 上，Windows 在 Windows 上，macOS 在 macOS 上）
+
+version: 2
+
+# 项目名称
+project_name: Optimus
+
+# 发布配置
+release:
+  # GitHub发布配置
+  github:
+    owner: panyingyun  # 修改为你的GitHub用户名
+    name: Optimus     # 修改为你的仓库名
+  
+  # 发布模式：替换或跳过已存在的发布
+  mode: replace
+  
+  # 发布说明模板
+  header: |
+    ## {{ .ProjectName }} {{ .Tag }}
+    
+    发布版本 {{ .Tag }}
+    
+  footer: |
+    ---
+    
+    由 [GoReleaser](https://github.com/goreleaser/goreleaser) 自动生成
+
+# 构建前执行的钩子
+before:
+  hooks:
+    # 构建前端
+    - cd frontend && npm install --legacy-peer-deps
+    - cd frontend && npm run build
+
+# 构建配置
+# 注意：Wails v2 应用需要 CGO 和平台特定的依赖
+# 由于 Wails 的复杂性，建议使用 wails build 命令而不是直接 go build
+# 这里提供一个基础配置，实际使用时可能需要根据平台调整
+builds:
+  # Linux AMD64 (Ubuntu 22.04 - webkit2_40)
+  - id: linux-amd64-webkit2_40
+    main: .
+    binary: optimus
+    goos:
+      - linux
+    goarch:
+      - amd64
+    env:
+      - CGO_ENABLED=1
+    flags:
+      - -tags=webkit2_40
+      - -trimpath
+    ldflags:
+      - -s -w
+      - -X main.Version={{.Version}}
+      - -X main.GitCommit={{.Commit}}
+      - -X main.BuildTime={{.Date}}
+    hooks:
+      # 使用 wails build 构建（如果可用）
+      pre: |
+        if command -v wails &> /dev/null; then
+          wails build -tags webkit2_40 -o dist/optimus || true
+        fi
+
+  # Linux AMD64 (Ubuntu 24.04 - webkit2_41)
+  - id: linux-amd64-webkit2_41
+    main: .
+    binary: optimus
+    goos:
+      - linux
+    goarch:
+      - amd64
+    env:
+      - CGO_ENABLED=1
+    flags:
+      - -tags=webkit2_41
+      - -trimpath
+    ldflags:
+      - -s -w
+      - -X main.Version={{.Version}}
+      - -X main.GitCommit={{.Commit}}
+      - -X main.BuildTime={{.Date}}
+    hooks:
+      pre: |
+        if command -v wails &> /dev/null; then
+          wails build -tags webkit2_41 -o dist/optimus || true
+        fi
+
+  # Linux ARM64
+  - id: linux-arm64
+    main: .
+    binary: optimus
+    goos:
+      - linux
+    goarch:
+      - arm64
+    env:
+      - CGO_ENABLED=1
+    flags:
+      - -tags=webkit2_41
+      - -trimpath
+    ldflags:
+      - -s -w
+      - -X main.Version={{.Version}}
+      - -X main.GitCommit={{.Commit}}
+      - -X main.BuildTime={{.Date}}
+    hooks:
+      pre: |
+        if command -v wails &> /dev/null; then
+          wails build -tags webkit2_41 -o dist/optimus || true
+        fi
+
+  # Windows AMD64
+  - id: windows-amd64
+    main: .
+    binary: optimus.exe
+    goos:
+      - windows
+    goarch:
+      - amd64
+    env:
+      - CGO_ENABLED=1
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w
+      - -H windowsgui
+      - -X main.Version={{.Version}}
+      - -X main.GitCommit={{.Commit}}
+      - -X main.BuildTime={{.Date}}
+    hooks:
+      pre: |
+        if (Get-Command wails -ErrorAction SilentlyContinue) {
+          wails build -o dist/optimus.exe
+        }
+
+  # macOS AMD64 (Intel)
+  - id: darwin-amd64
+    main: .
+    binary: optimus
+    goos:
+      - darwin
+    goarch:
+      - amd64
+    env:
+      - CGO_ENABLED=1
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w
+      - -X main.Version={{.Version}}
+      - -X main.GitCommit={{.Commit}}
+      - -X main.BuildTime={{.Date}}
+    hooks:
+      pre: |
+        if command -v wails &> /dev/null; then
+          wails build -o dist/optimus || true
+        fi
+
+  # macOS ARM64 (Apple Silicon)
+  - id: darwin-arm64
+    main: .
+    binary: optimus
+    goos:
+      - darwin
+    goarch:
+      - arm64
+    env:
+      - CGO_ENABLED=1
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w
+      - -X main.Version={{.Version}}
+      - -X main.GitCommit={{.Commit}}
+      - -X main.BuildTime={{.Date}}
+    hooks:
+      pre: |
+        if command -v wails &> /dev/null; then
+          wails build -o dist/optimus || true
+        fi
+
+# 归档配置
+archives:
+  - id: default
+    # 文件名模板
+    name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}{{ if eq .Os \"windows\" }}.zip{{ else }}.tar.gz{{ end }}"
+    
+    # 包含的文件
+    files:
+      - LICENSE
+      - README.md
+    
+    # 格式
+    format_overrides:
+      - goos: windows
+        formats:
+          - zip
+      - goos: linux
+        formats:
+          - tar.gz
+      - goos: darwin
+        formats:
+          - tar.gz
+
+# Linux 包管理器支持 (可选)
+nfpms:
+  - id: debian-webkit2_40
+    package_name: optimus
+    file_name_template: "{{ .ConventionalFileName }}"
+    maintainer: panyingyun@gmail.com
+    description: Image conversion and compression. Supports WebP, JPEG, and PNG. (WebKit2 GTK 4.0)
+    license: MIT
+    formats:
+      - deb
+    bindir: /usr/bin
+    dependencies:
+      - libwebkit2gtk-4.0-dev
+      - libgtk-3-dev
+    # 仅适用于 Linux AMD64 webkit2_40
+    ids:
+      - linux-amd64-webkit2_40
+
+  - id: debian-webkit2_41
+    package_name: optimus
+    file_name_template: "{{ .ConventionalFileName }}"
+    maintainer: panyingyun@gmail.com
+    description: Image conversion and compression. Supports WebP, JPEG, and PNG. (WebKit2 GTK 4.1)
+    license: MIT
+    formats:
+      - deb
+    bindir: /usr/bin
+    dependencies:
+      - libwebkit2gtk-4.1-dev
+      - libgtk-3-dev
+    # 仅适用于 Linux AMD64 webkit2_41
+    ids:
+      - linux-amd64-webkit2_41
+
+# 校验和配置
+checksum:
+  name_template: "{{ .ProjectName }}_{{ .Version }}_checksums.txt"
+  algorithm: sha256
+
+# 快照配置（用于测试）
+snapshot: {}
+
+# Changelog配置
+changelog:
+  # 使用git日志生成changelog
+  use: git
+  # 过滤提交信息
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+      - "^update:"

@@ -4,7 +4,12 @@
   "hash": "9e90cf09e659f7ecf5144d05d00fbb7315739dabd2dea14bb6294c5d26b3e761",
   "homepage": "https://github.com/splode/optimus",
   "license": "MIT",
-  "shortcuts": [["optimus.exe", "Optimus"]],
+  "shortcuts": [
+    [
+      "optimus.exe",
+      "Optimus"
+    ]
+  ],
   "url": "https://github.com/Splode/optimus/releases/download/v0.5.0-beta/optimus_v0.5.0-beta_windows_x86_64.zip",
-  "version": "0.5.0-beta"
+  "version": "0.6.0"
 }
