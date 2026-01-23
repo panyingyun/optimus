@@ -135,7 +135,7 @@ builds:
       pre:
         - sh -c "if command -v wails &> /dev/null; then wails build -o dist/optimus.exe || true; fi"
     # 如果无法交叉编译，可以取消注释下面的行来跳过
-    skip: true
+    skip: false
 
   # macOS AMD64 (Intel)
   # 注意：macOS 交叉编译需要在 macOS 系统上或使用 osxcross 工具链
