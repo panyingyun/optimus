@@ -33,8 +33,8 @@ release:
 # 构建前执行的钩子
 before:
   hooks:
-    - sh -c "cd frontend && npm install --legacy-peer-deps"
-    - sh -c "cd frontend && npm run build"
+    - cmd /c "cd frontend && npm install --legacy-peer-deps"
+    - cmd /c "cd frontend && npm run build"
 
 # 构建配置
 # 注意：Wails v2 应用需要 CGO 和平台特定的依赖
