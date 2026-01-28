@@ -53,4 +53,4 @@ build_ubuntu2404:
 	wails build -tags webkit2_41
 
 build-windows:
-	wails build 
+	wails build -tags desktop,production -ldflags "-w -s -H windowsgui"

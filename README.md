@@ -114,7 +114,7 @@ For Windows:
 ```bash
 make build-windows
 # or
-wails build
+go build -tags desktop,production -ldflags "-w -s -H windowsgui"
 ```
 
 ## License

@@ -125,7 +125,7 @@ Windows：
 ```bash
 make build-windows
 # 或
-wails build
+go build -tags desktop,production -ldflags "-w -s -H windowsgui"
 ```
 
 ## 许可证
